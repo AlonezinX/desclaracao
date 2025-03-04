@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosso Cantinho Especial</title>
+    <style>
+        /* Estilos Gerais */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Georgia', serif;
+            background-color: #fef1f1;
+            text-align: center;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Fundo Suave */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 238, 245, 0.8), rgba(255, 182, 193, 0.8));
+            z-index: -1;
+        }
+
+        /* Tela de Boas-Vindas Ajustada */
+        .boas-vindas {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: #f9d5d3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ff6f61;
+            opacity: 1;
+            transition: opacity 2s ease-in-out;
+            z-index: 10;
+        }
+
+        .boas-vindas.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Conteúdo Principal */
+        .conteudo {
+            padding: 50px 20px;
+            display: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Cartas Românticas */
+        .cartas {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin: 50px auto;
+            max-width: 1200px;
+        }
+
+        .carta {
+            width: 280px;
+            padding: 25px;
+            background: linear-gradient(145deg, #f4e4c1 10%, #e8d3a8 90%);
+            color: #4a2f0b;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            border-radius: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .carta:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Contador de Tempo com Textos */
+        .contador-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .contador-tempo {
+            display: inline-flex;
+            gap: 1rem;
+            background: linear-gradient(145deg, #ffd6e0, #ffb3c1);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(255, 111, 97, 0.15);
+            border: 2px solid #ff6f61;
+        }
+
+        .texto-romantico {
+            font-size: 1.2rem;
+            color: #c42d6b;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            margin: 0;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .tempo-item {
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .tempo-numero {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #c42d6b;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .tempo-label {
+            font-size: 0.8rem;
+            color: #ff6f61;
+            margin-top: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Player de Música */
+        .player-musica {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px auto;
+            max-width: 350px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .playlist {
+            margin-top: 15px;
+        }
+
+        .musica-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #ffe5e5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .musica-item:hover {
+            background: #ffd6d6;
+        }
+
+        /* Seções de Conteúdo */
+        .secao {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .grid-coisas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .item-coisa {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+
+        .item-coisa h3 {
+            color: #c42d6b;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .item-coisa ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .item-coisa li {
+            margin-bottom: 8px;
+            color: #7f3b44;
+            font-size: 0.95rem;
+        }
+
+        /* Corações Corrigidos */
+        .coracao {
+            position: fixed;
+            width: 25px;
+            height: 25px;
+            background-color: #ff1493;
+            transform: rotate(-45deg);
+            animation: flutuar 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+            opacity: 1;
+            z-index: 999;
+            bottom: -30px;
+            will-change: transform;
+        }
+
+        .coracao::before,
+        .coracao::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: #ff1493;
+            border-radius: 50%;
+        }
+
+        .coracao::before { top: -12px; left: 0; }
+        .coracao::after { top: 0; left: 12px; }
+
+        @keyframes flutuar {
+            0% { 
+                transform: 
+                    translateY(0) 
+                    rotate(-45deg)
+                    scale(0.9);
+                opacity: 1;
+            }
+            50% {
+                transform: 
+                    translateY(-50vh) 
+                    rotate(-50deg)
+                    scale(1.1);
+            }
+            100% { 
+                transform: 
+                    translateY(-100vh) 
+                    rotate(-40deg)
+                    scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* Botão Voltar ao Topo */
+        .btn-topo {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #ff6f61;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            z-index: 1000;
+        }
+
+        .btn-topo:hover {
+            transform: scale(1.1);
+            background: #c42d6b;
+        }
+
+        .btn-topo::after {
+            content: "↑";
+            color: white;
+            font-size: 24px;
+        }
+
+        /* Responsividade */
+          @media (max-width: 768px) {
+            .texto-romantico {
+                font-size: 1rem; /* Tamanho menor para mobile */
+            }
+            
+            .contador-tempo {
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+            }
+            
+            .tempo-numero {
+                font-size: 1.5rem;
+            }
+            
+            .tempo-item {
+                min-width: 50px;
+            }
+        }
+
+        .proposta-etapa {
+            display: none;
+        }
+
+        .proposta-etapa.ativa {
+            display: block;
+        }
+
+        .btn-resposta {
+            margin: 15px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-sim {
+            background: #ff6f61;
+            color: white;
+        }
+
+        .btn-nao {
+            background: #c42d6b;
+            color: white;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .btn-resposta:hover {
+            transform: scale(1.1);
+        }
+
+       /* Adicione estas regras CSS */
+.proposta-container {
+    margin: 100px auto; /* Aumente a margem */
+    padding: 40px;
+    max-width: 800px; /* Largura maior */
+}
+
+.proposta-etapa h2 {
+    font-size: 2rem;
+    color: #c42d6b;
+    margin-bottom: 20px;
+}
+
+.proposta-etapa h3 {
+    font-size: 1.8rem;
+    margin: 30px 0;
+}
+
+/* Corrija o nome da classe de celebração (remova o acento) */
+.celebração {
+    animation: celebrar 1s ease;
+    color: #c42d6b;
+    font-size: 2.5rem;
+    margin: 30px 0;
+}
+
+        @keyframes celebrar {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .confete {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff1493;
+            pointer-events: none;
+            animation: voar 3s linear forwards;
+        }
+
+        @keyframes voar {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Boas-Vindas -->
+    <div class="boas-vindas" id="boas-vindas">
+        <h1 id="boas-vindas-texto"></h1>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="conteudo" id="conteudo">
+        <h1>Nosso Cantinho Especial</h1>
+        <p>Este site foi feito com todo o amor para você.</p>
+
+        <!-- Cartas Românticas -->
+        <div class="cartas">
+            <div class="carta">"Engraçado pensar que tudo começou com um simples 'eii Daniell, tu mora no Fortim né?'. Só que o que parecia só mais uma conversa qualquer virou algo que mudou minha vida para sempre. E hoje, eu olho para nós dois e percebo que não há nada no mundo que eu queria mais do que isso: você e eu, juntos.
+
+Eu te amo. Mas não só de um jeito comum, desses que as pessoas falam sem sentir. Eu te amo com tudo que sou, com cada batida do meu coração. Te amo nos momentos felizes e nos dias difíceis. Te amo nos detalhes, nos gestos pequenos, nas palavras e até no silêncio.
+
+Você é meu lar. Minha paz. Minha felicidade. E eu jamais me cansarei de agradecer a Deus por ter cruzado nossos caminhos."</div>
+            <div class="carta">"Se eu te dissesse que, naquela noite, quando você me chamou, eu já sentia que algo especial estava começando, você acreditaria? Talvez fosse só coincidência, talvez destino. Mas, seja como for, foi o melhor acaso da minha vida.
+
+Desde então, cada dia ao seu lado tem sido um presente. Eu sou grato por você existir, por ter me escolhido, por ser essa pessoa incrível que transforma tudo ao seu redor. Grato pelo seu carinho, pelo seu amor, pelo jeito que me faz sentir especial sem nem precisar se esforçar.
+
+Você me faz feliz como ninguém nunca fez. E, se a vida me permitisse escolher de novo, eu ainda escolheria você. Sempre."</div>
+        </div>
+
+        <!-- Contador de Tempo -->
+        <div class="contador-container">
+            <p class="texto-romantico">FAZEM</p>
+            <div class="contador-tempo">
+                <div class="tempo-item">
+                    <div class="tempo-numero" id="dias">00</div>
+                    <div class="tempo-label">Dias</div>
+                </div>
+                <div class="tempo-item">
+                    <div class="tempo-numero" id="horas">00</div>
+                    <div class="tempo-label">Horas</div>
+                </div>
+                <div class="tempo-item">
+                    <div class="tempo-numero" id="minutos">00</div>
+                    <div class="tempo-label">Minutos</div>
+                </div>
+                <div class="tempo-item">
+                    <div class="tempo-numero" id="segundos">00</div>
+                    <div class="tempo-label">Segundos</div>
+                </div>
+            </div>
+            <p class="texto-romantico">QUE VOCÊ ENTROU NO MEU CORAÇÃO ❤️</p>
+        </div>
+
+        <!-- Player de Música -->
+        <section class="secao">
+            <h2>Músicas que me lembram você</h2>
+            <div class="player-musica">
+                <div class="controles-musica">
+                    <button class="botao-play">▶</button>
+                    <div class="barra-progresso">
+                        <div class="progresso-atual"></div>
+                    </div>
+                </div>
+                <div class="playlist">
+                    <div class="musica-item" data-src="musica1.mp3">Nosso lugar - mc kevin</div>
+                    <div class="musica-item" data-src="musica2.mp3">Anos luz - matuê</div>
+                    <div class="musica-item" data-src="musica3.mp3">Doutora 3 - mc kevin</div>
+                    <div class="musica-item" data-src="musica4.mp3">Aqueles olhos - dom m</div>
+                    <div class="musica-item" data-src="musica5.mp3">Sou favela - mc kevin</div>
+                    <div class="musica-item" data-src="musica6.mp3">Deixa rolar - mc luuky</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Coisas -->
+        <section class="secao">
+            <h2>Coisas que me Lembram Você</h2>
+            <div class="grid-coisas">
+                <div class="item-coisa">
+                    <h3>Memórias</h3>
+                    <ul>
+                        <li>As noites/madrugadas de conversa</li>
+                        <li>Seu riso contagiante</li>
+                        <li>As conversas intermináveis que fazem o tempo passar rápido demais.</li>
+                        <li>Cada abraço seu, que faz tudo ao redor desaparecer.</li>
+                        <li>A primeira vez que conversamos, sem imaginar o quanto isso mudaria minha vida.</li>
+                        <li>A primeira vez que eu te vi e pensei "mds, q menina linda"</li>
+                    </ul>
+                </div>
+                <div class="item-coisa">
+                    <h3>Objetos</h3>
+                    <ul>
+                        <li>Aquele moletom do the weenked</li>
+                        <li>As fotos suas no meu celular</li>
+                        <li>O perfume que você usa</li>
+                        <li>O perfume que, quando sinto na rua, me faz virar achando que você está ali.</li>
+                        <li>Qualquer coisa que tenha sua letra, mesmo que seja só uma anotação qualquer.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Motivos -->
+        <section class="secao">
+            <h2>Coisas que Eu Amo em Você</h2>
+            <div class="grid-coisas">
+                <div class="item-coisa">
+                    <h3>Personalidade</h3>
+                    <ul>
+                        <li>O brilho nos seus olhos.</li>
+                        <li>Seu senso de humor</li>
+                        <li>O carinho que você coloca nas pequenas coisas, sempre se importando comigo.</li>
+                        <li>O jeito que você transforma qualquer dia comum em algo especial, só com sua energia.</li>
+                        <li>Como você se importa comigo nos mínimos detalhes.</li>
+                        <li>Como você me entende sem que eu precise dizer uma palavra.</li>
+                        <li>Sua força, que me inspira a ser melhor todos os dias.</li>
+                    </ul>
+                </div>
+                <div class="item-coisa">
+                    <h3>Detalhes</h3>
+                    <ul>
+                        <li>O som da sua risada, que fica ecoando na minha mente</li>
+                        <li>Seu jeito carinhoso cmg</li>
+                        <li>Seu abraço aconchegantem</li>
+                        <li>Como seu cheiro fica em mim depois de um abraço</li>
+                        <li>A forma como você cuida de mim</li>
+                        <li>O olhar que você me dá quando acha que eu não estou percebendo</li>
+                        <li>Como sua voz tem um tom que me acalma instantaneamente</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+                  <!-- Nova seção da proposta -->
+    <div class="proposta-container">
+        <!-- Adicione esta classe 'ativa' na primeira etapa -->
+<div class="proposta-etapa ativa" id="etapa1">
+    <h2>Já que chegou até o final da página...</h2>
+    <p>Tenho uma pergunta importante para te fazer, está preparada?</p>
+    <button class="btn-resposta btn-sim" onclick="mostrarProposta()">Sim</button>
+    <button class="btn-resposta btn-nao" onclick="respostaNegativa()">Não</button>
+</div>
+
+        <div class="proposta-etapa" id="etapa2">
+            <h2>Então vamos lá...</h2>
+            <p>Responda com sinceridade </p>
+            <h3>Você quer casar comigo? 💍</h3>
+            <button class="btn-resposta btn-sim" onclick="aceitou()">SIM!</button>
+            <button class="btn-resposta btn-nao" id="btnFujao" onmouseover="fugirBotao()">NÃO</button>
+        </div>
+
+        <div class="proposta-etapa" id="etapa3">
+            <h2 class="celebração">🎉 PARABÉNS! 🎉</h2>
+            <p>A partir de agora você está oficialmente comprometida com o Daniel!</p>
+            <p>E só pra te lembrar que o tal "divórcio" aqui não existe viu? Vai ficar cmg pra sempre sim, e se tiver querendo divórcio, deita a cabeça no travesseiro e dorme que amanhã é outro dia 😌😝</p>
+        </div>
+    </div>
+
+        <!-- Botão Voltar ao Topo -->
+        <div class="btn-topo" id="btnTopo"></div>
+    </div>
+
+    <script>
+    // Adicione esta inicialização no DOMContentLoaded
+document.getElementById('etapa1').classList.add('ativa');
+document.getElementById('etapa2').classList.remove('ativa');
+document.getElementById('etapa3').classList.remove('ativa');
+    
+    function mostrarProposta() {
+            document.getElementById('etapa1').classList.remove('ativa');
+            document.getElementById('etapa2').classList.add('ativa');
+        }
+
+        function respostaNegativa() {
+            alert("Que pena que não está preparada... Mas vamos mesmo assim! 😜");
+            mostrarProposta();
+        }
+
+        function fugirBotao() {
+            const btn = document.getElementById('btnFujao');
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 100);
+            
+            btn.style.position = 'fixed';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+            btn.style.transform = 'scale(0.9)';
+            
+            // Adiciona confetes
+            for(let i = 0; i < 10; i++) {
+                criarConfete();
+            }
+        }
+
+        function aceitou() {
+            document.getElementById('etapa2').classList.remove('ativa');
+            document.getElementById('etapa3').classList.add('ativa');
+            
+            // Chuva de confetes
+            for(let i = 0; i < 50; i++) {
+                setTimeout(() => criarConfete(), i * 50);
+            }
+        }
+
+        function criarConfete() {
+            const confete = document.createElement('div');
+            confete.className = 'confete';
+            confete.style.left = Math.random() * 100 + 'vw';
+            confete.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+            document.body.appendChild(confete);
+            
+            setTimeout(() => confete.remove(), 3000);
+        }
+        
+    document.querySelectorAll('.carta').forEach(carta => {
+            carta.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animação Inicial
+            const boasVindas = document.getElementById('boas-vindas');
+            const boasVindasTexto = document.getElementById('boas-vindas-texto');
+            const conteudo = document.getElementById('conteudo');
+
+            let i = 0;
+            const mensagem = "Bem-vinda, Meu Amor!";
+            const digitar = () => {
+                if (i < mensagem.length) {
+                    boasVindasTexto.innerHTML += mensagem.charAt(i);
+                    i++;
+                    setTimeout(digitar, 150);
+                }
+            }
+            digitar();
+
+            setTimeout(() => {
+                boasVindas.classList.add('hide');
+                setTimeout(() => {
+                    boasVindas.style.display = 'none';
+                    conteudo.style.display = 'block';
+                }, 2000);
+            }, 3500);
+
+            // Contador de Tempo
+            const dataInicio = new Date("2025-02-21T00:00:00");
+            const atualizarContador = () => {
+                const agora = new Date();
+                const diff = agora - dataInicio;
+                
+                const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('dias').textContent = String(dias).padStart(2, '0');
+                document.getElementById('horas').textContent = String(horas).padStart(2, '0');
+                document.getElementById('minutos').textContent = String(minutos).padStart(2, '0');
+                document.getElementById('segundos').textContent = String(segundos).padStart(2, '0');
+            }
+            setInterval(atualizarContador, 1000);
+            atualizarContador();
+
+            // Corações Flutuantes
+            function criarCoracao() {
+            const coracao = document.createElement('div');
+            coracao.className = 'coracao';
+            coracao.style.left = Math.random() * 95 + 'vw';
+            coracao.style.animation = `flutuar ${Math.random() * 3 + 5}s ease-in-out infinite`;
+            document.body.appendChild(coracao);
+            
+            // Otimização de performance
+            setTimeout(() => {
+                coracao.style.willChange = 'transform, opacity';
+                requestAnimationFrame(() => {
+                    coracao.style.transform = 'translateY(-100vh)';
+                });
+            }, 50);
+
+            setTimeout(() => coracao.remove(), 8000);
+        }
+        
+        setInterval(criarCoracao, 7000); // Alterado de 1000 para 1500
+
+        // Intervalo otimizado para scroll
+        let ultimoScroll = 0;
+        window.addEventListener('scroll', () => {
+            const agora = Date.now();
+            if (agora - ultimoScroll > 1000) {
+                requestAnimationFrame(criarCoracao);
+                ultimoScroll = agora;
+            }
+        });
+
+            // Player de Música
+            const audio = new Audio();
+            const musicas = document.querySelectorAll('.musica-item');
+            const botaoPlay = document.querySelector('.botao-play');
+            const progresso = document.querySelector('.progresso-atual');
+
+            musicas.forEach(musica => {
+                musica.addEventListener('click', () => {
+                    audio.src = musica.dataset.src;
+                    audio.play();
+                    botaoPlay.textContent = "⏸";
+                });
+            });
+
+            botaoPlay.addEventListener('click', () => {
+                if(audio.paused) {
+                    audio.play();
+                    botaoPlay.textContent = "⏸";
+                } else {
+                    audio.pause();
+                    botaoPlay.textContent = "▶";
+                }
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progresso.style.width = progress + '%';
+            });
+
+            // Botão Voltar ao Topo
+            window.addEventListener('scroll', () => {
+                document.getElementById('btnTopo').style.display = 
+                    window.scrollY > 500 ? 'flex' : 'none';
+            });
+
+            document.getElementById('btnTopo').addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
